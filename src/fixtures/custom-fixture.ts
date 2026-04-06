@@ -1,9 +1,13 @@
 import { test as base } from '@playwright/test';
 import { BasePage } from '../pages/BasePage';
+import { PlaylistPage } from '../pages/PlaylistPage';
+import { SearchPage } from '../pages/SearchPage';
+import { sendScreenshotEmail } from '../utils/mail-helper';
 
 type MyFixture = {
   basePage: BasePage;
-  
+  playlistPage: PlaylistPage;
+  searchPage: SearchPage;
 };
 
 export const test = base.extend<MyFixture>({
@@ -28,12 +32,33 @@ export const test = base.extend<MyFixture>({
         contentType: 'image/png',
       });
 
+      try {
+        await sendScreenshotEmail({
+          to: process.env.TARGET_EMAIL as string,
+          screenshotPath,
+          subject: '❌ Test Fail Oldu',
+          text: `Test Adı: ${testInfo.title}`,
+        });
+      } catch (err) {
+        console.error('Mail gönderilemedi:', err);
+      }
+
     }
   },
 
   basePage: async ({ page }, use) => {
     const basePage = new BasePage(page);
     await use(basePage);
+  },
+
+  playlistPage: async ({ page }, use) => {
+    const playlistPage = new PlaylistPage(page);
+    await use(playlistPage);
+  },
+
+  searchPage: async ({ page }, use) => {
+    const searchPage = new SearchPage(page);
+    await use(searchPage);
   },
 
 });

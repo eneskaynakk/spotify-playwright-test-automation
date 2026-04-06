@@ -22,7 +22,7 @@ export class BasePage {
     };
 
     async goToSpotify() {
-        await this.page.goto('https://open.spotify.com');
+        await this.page.goto('/');
     };
 
     async rejectingCookies() {
